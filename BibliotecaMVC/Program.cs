@@ -1,22 +1,24 @@
-﻿using BibliotecaMVC.Services;
+﻿using BibliotecaMVC.Data;
+using BibliotecaMVC.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Registrar el DbContext de Entity Framework Core
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Inyección de Dependencias: se registra la relación entre la
 // abstracción IAutorService y su implementación concreta AutorService.
-// Ciclo de vida Scoped: una instancia por cada solicitud HTTP.
 builder.Services.AddScoped<IAutorService, AutorService>();
 
-// Actividad 5 (Reto): para usar la implementación alternativa basta con
-// comentar la línea anterior y descomentar la siguiente. El controlador
-// AutoresController NO requiere ningún cambio.
+// Actividad 5 (Reto): implementación alternativa
 // builder.Services.AddScoped<IAutorService, AutorServiceAlternativo>();
 
 // Inyección de Dependencias para Categorías usando ADO.NET
-// Se registra la relación entre ICategoriaService y CategoriaService
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 var app = builder.Build();
@@ -39,6 +41,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

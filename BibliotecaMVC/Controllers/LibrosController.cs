@@ -1,40 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BibliotecaMVC.Data;
 using BibliotecaMVC.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaMVC.Controllers
 {
     public class LibrosController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _entorno;
 
-        public LibrosController(IWebHostEnvironment entorno)
+        public LibrosController(ApplicationDbContext context, IWebHostEnvironment entorno)
         {
+            _context = context;
             _entorno = entorno;
         }
 
-        private static List<Libro> libros = new List<Libro>
+        // GET: Libros  → Actividad 2: Mostrar (EF Core)
+        public async Task<IActionResult> Index()
         {
-            new Libro { Id = 1, Titulo = "Cien años de soledad", Autor = "Gabriel García Márquez", Categoria = "Novela", AnioPublicacion = 1967, Disponible = true, ImagenUrl = "libro-default.png" },
-            new Libro { Id = 2, Titulo = "La casa de los espíritus", Autor = "Isabel Allende", Categoria = "Novela", AnioPublicacion = 1982, Disponible = true, ImagenUrl = "libro-default.png" },
-            new Libro { Id = 3, Titulo = "Ficciones", Autor = "Jorge Luis Borges", Categoria = "Cuento", AnioPublicacion = 1944, Disponible = false, ImagenUrl = "libro-default.png" },
-            new Libro { Id = 4, Titulo = "La ciudad y los perros", Autor = "Mario Vargas Llosa", Categoria = "Novela", AnioPublicacion = 1963, Disponible = true, ImagenUrl = "libro-default.png" },
-            new Libro { Id = 5, Titulo = "Rayuela", Autor = "Julio Cortázar", Categoria = "Novela", AnioPublicacion = 1963, Disponible = false, ImagenUrl = "libro-default.png" }
-        };
-
-        // GET: Libros
-        public IActionResult Index()
-        {
+            var libros = await _context.Libros.ToListAsync();
             return View(libros);
         }
 
         // GET: Libros/Details/5
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var libro = libros.FirstOrDefault(l => l.Id == id);
-            if (libro == null)
-            {
-                return NotFound();
-            }
+            var libro = await _context.Libros.FirstOrDefaultAsync(l => l.Id == id);
+            if (libro == null) return NotFound();
             return View(libro);
         }
 
@@ -44,76 +37,74 @@ namespace BibliotecaMVC.Controllers
             return View();
         }
 
-        // POST: Libros/Create
+        // POST: Libros/Create  → Actividad 3: Agregar (EF Core)
         [HttpPost]
-        public async Task<IActionResult> Create(Libro libro, IFormFile imagen)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Libro libro, IFormFile? imagen)
         {
-            libro.Id = libros.Any() ? libros.Max(l => l.Id) + 1 : 1;
-            libro.ImagenUrl = await GuardarImagen(imagen);
-            libros.Add(libro);
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                libro.ImagenUrl = await GuardarImagen(imagen);
+                _context.Add(libro);                 // Agrega el libro al DbSet
+                await _context.SaveChangesAsync();   // Guarda en SQL Server
+                return RedirectToAction(nameof(Index));
+            }
+            return View(libro);
         }
 
         // GET: Libros/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var libro = libros.FirstOrDefault(l => l.Id == id);
-            if (libro == null)
-            {
-                return NotFound();
-            }
+            var libro = await _context.Libros.FindAsync(id);
+            if (libro == null) return NotFound();
             return View(libro);
         }
 
         // POST: Libros/Edit/5
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, Libro libroEditado, IFormFile imagen)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Libro libroEditado, IFormFile? imagen)
         {
-            var libro = libros.FirstOrDefault(l => l.Id == id);
-            if (libro == null)
+            if (id != libroEditado.Id) return NotFound();
+
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                if (imagen != null && imagen.Length > 0)
+                {
+                    libroEditado.ImagenUrl = await GuardarImagen(imagen);
+                }
+
+                _context.Update(libroEditado);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            libro.Titulo = libroEditado.Titulo;
-            libro.Autor = libroEditado.Autor;
-            libro.Categoria = libroEditado.Categoria;
-            libro.AnioPublicacion = libroEditado.AnioPublicacion;
-            libro.Disponible = libroEditado.Disponible;
-
-            if (imagen != null)
-            {
-                libro.ImagenUrl = await GuardarImagen(imagen);
-            }
-
-            return RedirectToAction("Index");
+            return View(libroEditado);
         }
 
         // GET: Libros/Delete/5
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var libro = libros.FirstOrDefault(l => l.Id == id);
-            if (libro == null)
-            {
-                return NotFound();
-            }
+            var libro = await _context.Libros.FirstOrDefaultAsync(l => l.Id == id);
+            if (libro == null) return NotFound();
             return View(libro);
         }
 
         // POST: Libros/Delete/5
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var libro = libros.FirstOrDefault(l => l.Id == id);
+            var libro = await _context.Libros.FindAsync(id);
             if (libro != null)
             {
-                libros.Remove(libro);
+                _context.Libros.Remove(libro);
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
-        // Actividad 5 (Reto): guarda la imagen subida en wwwroot/images
-        private async Task<string> GuardarImagen(IFormFile imagen)
+        // Guarda la imagen subida en wwwroot/images
+        private async Task<string?> GuardarImagen(IFormFile? imagen)
         {
             if (imagen == null || imagen.Length == 0)
             {
