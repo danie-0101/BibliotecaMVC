@@ -1,0 +1,44 @@
+﻿@model Libro
+
+@{
+    ViewData["Title"] = "Detalle del libro";
+}
+
+<h2>Detalle del libro</h2>
+
+<div class="card" style="max-width: 500px;">
+    <img src="~/images/@Model.ImagenUrl" class="card-img-top" style="max-height:300px; object-fit:cover;"
+         alt="Portada de @Model.Titulo" onerror="this.src='/images/libro-default.png'" />
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Título</dt>
+            <dd class="col-sm-8">@Model.Titulo</dd>
+
+            <dt class="col-sm-4">Autor</dt>
+            <dd class="col-sm-8">@Model.Autor</dd>
+
+            <dt class="col-sm-4">Categoría</dt>
+            <dd class="col-sm-8">@Model.Categoria</dd>
+
+            <dt class="col-sm-4">Año</dt>
+            <dd class="col-sm-8">@Model.AnioPublicacion</dd>
+
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">
+                @if (Model.Disponible)
+                {
+                    <span class="badge bg-success">Disponible</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">No disponible</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver al listado</a>
+</div>

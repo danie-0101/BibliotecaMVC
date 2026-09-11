@@ -1,0 +1,45 @@
+﻿@model Libro
+
+@{
+    ViewData["Title"] = "Editar libro";
+}
+
+<h2>Editar libro</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" style="max-width: 500px;">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ImagenUrl" />
+
+    <div class="mb-3">
+        <img src="~/images/@Model.ImagenUrl" style="max-height:150px;" class="mb-2 d-block"
+             alt="Portada actual" onerror="this.src='/images/libro-default.png'" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Autor" class="form-label"></label>
+        <input asp-for="Autor" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Categoria" class="form-label"></label>
+        <input asp-for="Categoria" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="AnioPublicacion" class="form-label"></label>
+        <input asp-for="AnioPublicacion" class="form-control" />
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Disponible" class="form-check-input" />
+        <label asp-for="Disponible" class="form-check-label"></label>
+    </div>
+    <div class="mb-3">
+        <label for="imagen" class="form-label">Reemplazar imagen (opcional)</label>
+        <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*" />
+    </div>
+
+    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

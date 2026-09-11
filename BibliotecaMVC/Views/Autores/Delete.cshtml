@@ -1,0 +1,16 @@
+﻿@model Autor
+
+@{
+    ViewData["Title"] = "Eliminar autor";
+}
+
+<h2>Eliminar autor</h2>
+
+<div class="alert alert-danger" style="max-width: 500px;">
+    ¿Está seguro de que desea eliminar a <strong>@Model.Nombre @Model.Apellido</strong>?
+</div>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

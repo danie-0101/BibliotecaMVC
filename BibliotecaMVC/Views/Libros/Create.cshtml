@@ -1,0 +1,38 @@
+﻿@model Libro
+
+@{
+    ViewData["Title"] = "Nuevo libro";
+}
+
+<h2>Agregar libro</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" style="max-width: 500px;">
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Autor" class="form-label"></label>
+        <input asp-for="Autor" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Categoria" class="form-label"></label>
+        <input asp-for="Categoria" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="AnioPublicacion" class="form-label"></label>
+        <input asp-for="AnioPublicacion" class="form-control" />
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Disponible" class="form-check-input" />
+        <label asp-for="Disponible" class="form-check-label"></label>
+    </div>
+    <div class="mb-3">
+        <label for="imagen" class="form-label">Imagen de portada</label>
+        <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*" />
+        <small class="text-muted">Si no seleccionas una imagen, se usará una portada por defecto.</small>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

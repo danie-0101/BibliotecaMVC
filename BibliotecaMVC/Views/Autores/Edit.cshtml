@@ -1,0 +1,35 @@
+﻿@model Autor
+
+@{
+    ViewData["Title"] = "Editar autor";
+}
+
+<h2>Editar autor</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" style="max-width: 500px;">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Apellido" class="form-label"></label>
+        <input asp-for="Apellido" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Nacionalidad" class="form-label"></label>
+        <input asp-for="Nacionalidad" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="FechaNacimiento" class="form-label"></label>
+        <input asp-for="FechaNacimiento" class="form-control" type="date" value="@Model.FechaNacimiento.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Activo" class="form-check-input" />
+        <label asp-for="Activo" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

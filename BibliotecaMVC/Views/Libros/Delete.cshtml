@@ -1,0 +1,26 @@
+﻿@model Libro
+
+@{
+    ViewData["Title"] = "Eliminar libro";
+}
+
+<h2>Eliminar libro</h2>
+
+<div class="alert alert-danger" style="max-width: 500px;">
+    ¿Está seguro de que desea eliminar <strong>@Model.Titulo</strong>?
+</div>
+
+<div class="card mb-3" style="max-width: 500px;">
+    <img src="~/images/@Model.ImagenUrl" class="card-img-top" style="max-height:250px; object-fit:cover;"
+         alt="Portada de @Model.Titulo" onerror="this.src='/images/libro-default.png'" />
+    <div class="card-body">
+        <p><strong>Autor:</strong> @Model.Autor</p>
+        <p><strong>Categoría:</strong> @Model.Categoria</p>
+        <p><strong>Año:</strong> @Model.AnioPublicacion</p>
+    </div>
+</div>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

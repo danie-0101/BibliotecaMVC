@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Biblioteca Virtual</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/about.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <i class="fas fa-book-open"></i>
+                Biblioteca Virtual
+            </a>
+            <ul class="nav-menu">
+                <li><a href="/" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+                    <i class="fas fa-home"></i> Inicio
+                </a></li>
+                <li><a href="/Home/About" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "About" ? "active" : "")">
+                    <i class="fas fa-info-circle"></i> Acerca de
+                </a></li>
+                <li><a href="#"><i class="fas fa-book"></i> Libros</a></li>
+                <li><a href="#"><i class="fas fa-user"></i> Mi cuenta</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div>
+                <p><i class="fas fa-copyright"></i> 2024 Biblioteca Virtual</p>
+            </div>
+            <div>
+                <a href="#" class="btn btn-primary btn-sm"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="btn btn-primary btn-sm"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="btn btn-primary btn-sm"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="btn btn-primary btn-sm"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div>
+                <p><i class="fas fa-envelope"></i> contacto@biblioteca.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

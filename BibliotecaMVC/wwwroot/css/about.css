@@ -1,0 +1,275 @@
+﻿/* ============================================
+   ACTIVIDAD 4: Componentes Reutilizables
+   ============================================ */
+
+/* Componente 1: Tarjeta de Servicio */
+.service-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border-top: 4px solid var(--primary-color);
+}
+
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .service-card .icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .service-card h3 {
+        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .service-card p {
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .service-card .badge {
+        display: inline-block;
+        background: var(--success-color);
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+/* Componente 2: Tarjeta de Estadística */
+.stat-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+    .stat-card:hover {
+        transform: scale(1.05);
+    }
+
+    .stat-card .number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        display: block;
+    }
+
+    .stat-card .label {
+        color: #666;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+/* ============================================
+   ACTIVIDAD 5: Interfaz Completa About
+   ============================================ */
+
+/* Hero About */
+.about-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+    .about-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .about-hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+/* Misión y Visión - Flexbox */
+.mission-vision {
+    display: flex;
+    gap: 2rem;
+    margin: 3rem 0;
+    flex-wrap: wrap;
+}
+
+    .mission-vision > div {
+        flex: 1 1 300px;
+        padding: 2rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .mission-vision h2 {
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .mission-vision i {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+    }
+
+    .mission-vision p {
+        color: #555;
+    }
+
+/* Servicios - CSS Grid */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+/* Estadísticas - CSS Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+/* Equipo - Flexbox */
+.team-section {
+    margin: 3rem 0;
+}
+
+.team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.team-member {
+    flex: 1 1 200px;
+    min-width: 200px;
+    max-width: 250px;
+    text-align: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+    .team-member:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .team-member .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+    }
+
+    .team-member h4 {
+        color: var(--secondary-color);
+        margin-bottom: 0.3rem;
+    }
+
+    .team-member .role {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+/* ============================================
+   DISEÑO ADAPTABLE - About
+   ============================================ */
+
+/* Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .about-hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+    .about-hero {
+        padding: 2rem 1rem;
+    }
+
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+
+        .about-hero p {
+            font-size: 1rem;
+        }
+
+    .mission-vision {
+        flex-direction: column;
+    }
+
+        .mission-vision > div {
+            flex: 1 1 auto;
+        }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .team-member {
+        flex: 1 1 150px;
+        min-width: 150px;
+    }
+
+    .service-card {
+        padding: 1.5rem;
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-member {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    .about-hero h1 {
+        font-size: 1.8rem;
+    }
+}
