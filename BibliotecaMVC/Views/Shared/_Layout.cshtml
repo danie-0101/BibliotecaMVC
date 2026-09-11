@@ -20,7 +20,7 @@
     <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a href="/" class="navbar-brand">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <i class="fas fa-book-open"></i>
                 Biblioteca Virtual
             </a>
@@ -30,28 +30,28 @@
             <div class="collapse navbar-collapse" id="navMenu">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
                             <i class="fas fa-home"></i> Inicio
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Home/About">
+                        <a class="nav-link" asp-controller="Home" asp-action="About">
                             <i class="fas fa-info-circle"></i> Acerca de
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Categorias">
+                        <a class="nav-link" asp-controller="Categorias" asp-action="Index">
                             <i class="fas fa-tags"></i> Categorías
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-controller="Libros" asp-action="Index">
                             <i class="fas fa-book"></i> Libros
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-user"></i> Mi cuenta
+                        <a class="nav-link" asp-controller="Autores" asp-action="Index">
+                            <i class="fas fa-user-edit"></i> Autores
                         </a>
                     </li>
                 </ul>
