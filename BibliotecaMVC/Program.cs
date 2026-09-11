@@ -15,6 +15,10 @@ builder.Services.AddScoped<IAutorService, AutorService>();
 // AutoresController NO requiere ningún cambio.
 // builder.Services.AddScoped<IAutorService, AutorServiceAlternativo>();
 
+// Inyección de Dependencias para Categorías usando ADO.NET
+// Se registra la relación entre ICategoriaService y CategoriaService
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,31 @@
+@model Categoria
+
+@{
+    ViewData["Title"] = "Eliminar Categoría";
+}
+
+<h2>Eliminar Categoría</h2>
+
+<div class="alert alert-danger" style="max-width: 500px;">
+    <h5 class="alert-heading">⚠️ Advertencia</h5>
+    <p>¿Está seguro de que desea eliminar la categoría <strong>@Model.Nombre</strong>?</p>
+    <hr>
+    <p class="mb-0">Esta acción es <strong>irreversible</strong> y eliminará permanentemente esta categoría de la base de datos.</p>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Descripcion))
+{
+    <div class="mb-3" style="max-width: 500px;">
+        <h6>Descripción:</h6>
+        <p class="text-muted">@Model.Descripcion</p>
+    </div>
+}
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="max-width: 500px;">
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Confirmar Eliminación
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Cancelar
+    </a>
+</form>
