@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
 using BibliotecaMVC.Services;
 
 namespace BibliotecaMVC.Controllers
 {
+    [Authorize(Roles = "Administrador,Lector")]
     public class CategoriasController : Controller
     {
         private readonly ICategoriaService _categoriaService;
@@ -33,6 +35,7 @@ namespace BibliotecaMVC.Controllers
         /// <summary>
         /// Muestra el formulario para crear una nueva categoría
         /// </summary>
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -43,6 +46,7 @@ namespace BibliotecaMVC.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create(Categoria categoria)
         {
             if (!ModelState.IsValid)
@@ -65,6 +69,7 @@ namespace BibliotecaMVC.Controllers
         /// <summary>
         /// Muestra el formulario para editar una categoría existente
         /// </summary>
+        [Authorize(Roles = "Administrador")]
         public IActionResult Edit(int id)
         {
             if (id == 0)
@@ -93,6 +98,7 @@ namespace BibliotecaMVC.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Edit(int id, Categoria categoriaEditada)
         {
             if (id != categoriaEditada.Id)
@@ -126,6 +132,7 @@ namespace BibliotecaMVC.Controllers
         /// <summary>
         /// Muestra la página de confirmación de eliminación
         /// </summary>
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             if (id == 0)
@@ -154,6 +161,7 @@ namespace BibliotecaMVC.Controllers
         /// </summary>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
             if (id == 0)

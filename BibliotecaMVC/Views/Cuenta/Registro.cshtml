@@ -1,0 +1,10 @@
+@model BibliotecaMVC.Models.RegistroViewModel
+@{ ViewData["Title"] = "Registro"; }
+<h2>Crear cuenta de lector</h2>
+<form method="post" asp-action="Registro">
+ @Html.AntiForgeryToken()
+ <div asp-validation-summary="All" class="text-danger"></div>
+ <div class="mb-3"><label asp-for="Email"></label><input asp-for="Email" class="form-control" /></div>
+ <div class="mb-3"><label asp-for="Password">Contraseña</label><input asp-for="Password" class="form-control" /></div>
+ <button class="btn btn-primary" type="submit">Registrarme</button>
+</form>

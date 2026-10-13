@@ -1,0 +1,19 @@
+@model List<(string Email, string Rol)>
+@{ ViewData["Title"] = "Administrar roles"; }
+<h2>Administrar roles</h2>
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+<table class="table"><thead><tr><th>Usuario</th><th>Rol actual</th><th>Asignar rol</th></tr></thead><tbody>
+@foreach (var item in Model) {
+<tr><td>@item.Email</td><td>@item.Rol</td><td>
+<form asp-action="Asignar" method="post" class="d-flex gap-2">
+ @Html.AntiForgeryToken()
+ <input type="hidden" name="email" value="@item.Email" />
+ <select name="rol" class="form-select">
+ @foreach (var rol in new[] { "Administrador", "Lector" }) {
+ <option value="@rol" selected="@(item.Rol == rol)">@rol</option>
+ }
+ </select><button class="btn btn-primary" type="submit">Guardar</button>
+</form></td></tr>
+}
+</tbody></table>

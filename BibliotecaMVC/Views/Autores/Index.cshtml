@@ -14,7 +14,7 @@
             <th>Nacionalidad</th>
             <th>Fecha de nacimiento</th>
             <th>Estado</th>
-            <th>Acciones</th>
+            @if (User.IsInRole("Administrador")) { <th>Acciones</th> }
         </tr>
     </thead>
     <tbody>
@@ -35,10 +35,12 @@
                         <span class="badge bg-danger">Inactivo</span>
                     }
                 </td>
+                @if (User.IsInRole("Administrador")) {
                 <td>
                     <a asp-action="Edit" asp-route-id="@autor.Id" class="btn btn-sm btn-warning">Editar</a>
                     <a asp-action="Delete" asp-route-id="@autor.Id" class="btn btn-sm btn-danger">Eliminar</a>
                 </td>
+                }
             </tr>
         }
     </tbody>

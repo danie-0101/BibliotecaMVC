@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
 using BibliotecaMVC.Services;
 
 namespace BibliotecaMVC.Controllers
 {
+    [Authorize(Roles = "Administrador,Lector")]
     public class AutoresController : Controller
     {
         private readonly IAutorService _autorService;
@@ -19,6 +21,8 @@ namespace BibliotecaMVC.Controllers
             return View(autores.ToList());
         }
 
+        [Authorize(Roles = "Administrador")]
+
         public IActionResult Edit(int id)
         {
             var autor = _autorService.ObtenerAutorPorId(id);
@@ -30,6 +34,7 @@ namespace BibliotecaMVC.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Edit(int id, Autor autorEditado)
         {
             var autor = _autorService.ObtenerAutorPorId(id);
@@ -43,6 +48,8 @@ namespace BibliotecaMVC.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Administrador")]
+
         public IActionResult Delete(int id)
         {
             var autor = _autorService.ObtenerAutorPorId(id);
@@ -54,6 +61,7 @@ namespace BibliotecaMVC.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
             _autorService.EliminarAutor(id);
