@@ -28,7 +28,7 @@ Permite gestionar libros, autores y categorías, así como administrar usuarios 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone URL_DEL_REPOSITORIO
+git clone https://github.com/danie-0101/BibliotecaMVC.git
 ```
 
 Abrir la solución en Visual Studio.
