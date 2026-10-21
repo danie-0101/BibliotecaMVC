@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Authorization;
 using BibliotecaMVC.Data;
 using BibliotecaMVC.Models;
@@ -6,129 +7,175 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaMVC.Controllers
 {
-    [Authorize(Roles = "Administrador,Lector")]
+    [Authorize(Roles = "Admin,Bibliotecario,Usuario")]
     public class LibrosController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _entorno;
 
-        public LibrosController(ApplicationDbContext context, IWebHostEnvironment entorno)
+        public LibrosController(
+            ApplicationDbContext context,
+            IWebHostEnvironment entorno)
         {
             _context = context;
             _entorno = entorno;
         }
 
-        // GET: Libros  → Actividad 2: Mostrar (EF Core)
+        // CONSULTAR LIBROS
+        // Los tres roles pueden acceder
         public async Task<IActionResult> Index()
         {
             var libros = await _context.Libros.ToListAsync();
             return View(libros);
         }
 
-        // GET: Libros/Details/5
+        // VER DETALLES
+        // Los tres roles pueden acceder
         public async Task<IActionResult> Details(int id)
         {
-            var libro = await _context.Libros.FirstOrDefaultAsync(l => l.Id == id);
-            if (libro == null) return NotFound();
+            var libro = await _context.Libros
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (libro == null)
+                return NotFound();
+
             return View(libro);
         }
 
-        // GET: Libros/Create
-        [Authorize(Roles = "Administrador")]
+        // CREAR LIBRO - GET
+        [Authorize(Roles = "Admin,Bibliotecario")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Libros/Create  → Actividad 3: Agregar (EF Core)
+        // CREAR LIBRO - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Create(Libro libro, IFormFile? imagen)
+        [Authorize(Roles = "Admin,Bibliotecario")]
+        public async Task<IActionResult> Create(
+            Libro libro,
+            IFormFile? imagen)
         {
             if (ModelState.IsValid)
             {
                 libro.ImagenUrl = await GuardarImagen(imagen);
-                _context.Add(libro);                 // Agrega el libro al DbSet
-                await _context.SaveChangesAsync();   // Guarda en SQL Server
+
+                _context.Add(libro);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(libro);
         }
 
-        // GET: Libros/Edit/5
-        [Authorize(Roles = "Administrador")]
+        // EDITAR LIBRO - GET
+        [Authorize(Roles = "Admin,Bibliotecario")]
         public async Task<IActionResult> Edit(int id)
         {
             var libro = await _context.Libros.FindAsync(id);
-            if (libro == null) return NotFound();
+
+            if (libro == null)
+                return NotFound();
+
             return View(libro);
         }
 
-        // POST: Libros/Edit/5
+        // EDITAR LIBRO - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Edit(int id, Libro libroEditado, IFormFile? imagen)
+        [Authorize(Roles = "Admin,Bibliotecario")]
+        public async Task<IActionResult> Edit(
+            int id,
+            Libro libroEditado,
+            IFormFile? imagen)
         {
-            if (id != libroEditado.Id) return NotFound();
+            if (id != libroEditado.Id)
+                return NotFound();
+
+            var libro = await _context.Libros.FindAsync(id);
+
+            if (libro == null)
+                return NotFound();
 
             if (ModelState.IsValid)
             {
+                libro.Titulo = libroEditado.Titulo;
+                libro.Autor = libroEditado.Autor;
+                libro.Categoria = libroEditado.Categoria;
+                libro.AnioPublicacion = libroEditado.AnioPublicacion;
+                libro.Disponible = libroEditado.Disponible;
+
                 if (imagen != null && imagen.Length > 0)
                 {
-                    libroEditado.ImagenUrl = await GuardarImagen(imagen);
+                    libro.ImagenUrl = await GuardarImagen(imagen);
                 }
 
-                _context.Update(libroEditado);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
+            libroEditado.ImagenUrl = libro.ImagenUrl;
             return View(libroEditado);
         }
 
-        // GET: Libros/Delete/5
-        [Authorize(Roles = "Administrador")]
+        // ELIMINAR LIBRO - GET
+        [Authorize(Roles = "Admin,Bibliotecario")]
         public async Task<IActionResult> Delete(int id)
         {
-            var libro = await _context.Libros.FirstOrDefaultAsync(l => l.Id == id);
-            if (libro == null) return NotFound();
+            var libro = await _context.Libros
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (libro == null)
+                return NotFound();
+
             return View(libro);
         }
 
-        // POST: Libros/Delete/5
+        // ELIMINAR LIBRO - POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin,Bibliotecario")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var libro = await _context.Libros.FindAsync(id);
+
             if (libro != null)
             {
                 _context.Libros.Remove(libro);
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        // Guarda la imagen subida en wwwroot/images
-        private async Task<string?> GuardarImagen(IFormFile? imagen)
+        // GUARDAR IMÁGENES
+        private async Task<string?> GuardarImagen(
+            IFormFile? imagen)
         {
             if (imagen == null || imagen.Length == 0)
             {
                 return "libro-default.png";
             }
 
-            var carpetaImagenes = Path.Combine(_entorno.WebRootPath, "images");
+            var carpetaImagenes = Path.Combine(
+                _entorno.WebRootPath, "images");
+
             if (!Directory.Exists(carpetaImagenes))
             {
                 Directory.CreateDirectory(carpetaImagenes);
             }
 
-            var nombreArchivo = $"{Guid.NewGuid()}{Path.GetExtension(imagen.FileName)}";
-            var ruta = Path.Combine(carpetaImagenes, nombreArchivo);
+            var nombreArchivo =
+                $"{Guid.NewGuid()}{Path.GetExtension(imagen.FileName)}";
 
-            using (var stream = new FileStream(ruta, FileMode.Create))
+            var ruta = Path.Combine(
+                carpetaImagenes, nombreArchivo);
+
+            using (var stream = new FileStream(
+                ruta, FileMode.Create))
             {
                 await imagen.CopyToAsync(stream);
             }

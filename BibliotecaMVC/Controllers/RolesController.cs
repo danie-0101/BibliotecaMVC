@@ -1,44 +1,139 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+
 namespace BibliotecaMVC.Controllers;
-[Authorize(Roles = "Administrador")]
+
+[Authorize(Roles = "Admin")]
 public class RolesController : Controller
 {
     private readonly UserManager<IdentityUser> _users;
-    public RolesController(UserManager<IdentityUser> users) => _users = users;
+
+    private static readonly string[] RolesPermitidos =
+    {
+        "Admin",
+        "Bibliotecario",
+        "Usuario"
+    };
+
+    public RolesController(UserManager<IdentityUser> users)
+    {
+        _users = users;
+    }
+
+    // MOSTRAR USUARIOS Y ROLES
     public async Task<IActionResult> Index()
     {
-        var result = new List<(string Email, string Rol)>();
-        foreach (var user in _users.Users.ToList())
+        var resultado = new List<(string Email, string Rol)>();
+
+        foreach (var usuario in _users.Users.ToList())
         {
-            var roles = await _users.GetRolesAsync(user);
-            result.Add((user.Email ?? "", string.Join(", ", roles)));
+            var roles = await _users.GetRolesAsync(usuario);
+
+            resultado.Add((
+                usuario.Email ?? "",
+                string.Join(", ", roles)
+            ));
         }
-        return View(result);
+
+        return View(resultado);
     }
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Asignar(string email, string rol)
+
+    // ASIGNAR ROL
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Asignar(
+        string email,
+        string rol)
     {
-        if (!new[] { "Administrador", "Lector" }.Contains(rol)) return BadRequest();
-        var user = await _users.FindByEmailAsync(email);
-        if (user == null) return NotFound();
-        var roles = await _users.GetRolesAsync(user);
-        var admins = await _users.GetUsersInRoleAsync("Administrador");
-        if (rol == "Administrador" && !roles.Contains("Administrador") && admins.Count >= 2)
+        if (!RolesPermitidos.Contains(rol))
+            return BadRequest();
+
+        var usuario = await _users.FindByEmailAsync(email);
+
+        if (usuario == null)
+            return NotFound();
+
+        var rolesActuales =
+            await _users.GetRolesAsync(usuario);
+
+        var administradores =
+            await _users.GetUsersInRoleAsync("Admin");
+
+        // Proteger al último administrador
+        if (rolesActuales.Contains("Admin") &&
+            rol != "Admin" &&
+            administradores.Count <= 1)
         {
-            TempData["Error"] = "Solo se permiten dos administradores.";
+            TempData["Error"] =
+                "No se puede quitar el último administrador.";
+
             return RedirectToAction(nameof(Index));
         }
-        if (roles.Contains("Administrador") && rol != "Administrador" && admins.Count <= 1)
+
+        // Evitar asignaciones duplicadas
+        if (rolesActuales.Contains(rol) &&
+            rolesActuales.Count(
+                r => RolesPermitidos.Contains(r)) == 1)
         {
-            TempData["Error"] = "No se puede quitar el último administrador.";
+            TempData["Success"] =
+                "El usuario ya tiene ese rol.";
+
             return RedirectToAction(nameof(Index));
         }
-        var removed = await _users.RemoveFromRolesAsync(user, roles);
-        if (!removed.Succeeded) { TempData["Error"] = "No se pudo actualizar el rol."; return RedirectToAction(nameof(Index)); }
-        var assigned = await _users.AddToRoleAsync(user, rol);
-        TempData[assigned.Succeeded ? "Success" : "Error"] = assigned.Succeeded ? "Rol actualizado. El usuario debe iniciar sesión nuevamente." : "Error al asignar el rol.";
+
+        // Agregar el rol nuevo
+        if (!rolesActuales.Contains(rol))
+        {
+            var agregado =
+                await _users.AddToRoleAsync(usuario, rol);
+
+            if (!agregado.Succeeded)
+            {
+                TempData["Error"] =
+                    string.Join("; ",
+                        agregado.Errors.Select(
+                            e => e.Description));
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // Quitar otros roles nuevos, pero conservar
+        // los heredados para no afectar otros módulos.
+        var quitar = rolesActuales
+            .Where(r => RolesPermitidos.Contains(r) &&
+                        r != rol)
+            .ToArray();
+
+        if (quitar.Length > 0)
+        {
+            var eliminado =
+                await _users.RemoveFromRolesAsync(
+                    usuario, quitar);
+
+            if (!eliminado.Succeeded)
+            {
+                if (!rolesActuales.Contains(rol))
+                {
+                    await _users.RemoveFromRoleAsync(
+                        usuario, rol);
+                }
+
+                TempData["Error"] =
+                    "No se pudieron actualizar los roles: " +
+                    string.Join("; ",
+                        eliminado.Errors.Select(
+                            e => e.Description));
+
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        TempData["Success"] =
+            "Rol actualizado. El usuario debe cerrar sesión e ingresar nuevamente.";
+
         return RedirectToAction(nameof(Index));
     }
 }
