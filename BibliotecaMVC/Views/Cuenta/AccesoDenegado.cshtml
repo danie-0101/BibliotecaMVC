@@ -1,4 +1,43 @@
-@{ ViewData["Title"] = "Acceso denegado"; }
-<h2>Acceso denegado</h2>
-<p>No tienes permiso para realizar esta operación con tu rol actual.</p>
-<a asp-controller="Libros" asp-action="Index" class="btn btn-primary">Volver a libros</a>
+@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+
+            <div class="mb-4">
+                <i class="bi bi-shield-lock display-1 text-warning"></i>
+            </div>
+
+            <h1 class="text-warning mb-3">
+                Acceso denegado
+            </h1>
+
+            <p class="lead">
+                No tenés permisos para acceder a esta sección.
+            </p>
+
+            <p class="text-muted">
+                Tu cuenta no tiene el rol necesario para realizar
+                esta operación. Si considerás que se trata de un error,
+                comunicate con el administrador.
+            </p>
+
+            <div class="mt-4">
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="btn btn-primary">
+                    Volver al inicio
+                </a>
+
+                <a asp-controller="Cuenta"
+                   asp-action="Logout"
+                   class="btn btn-outline-secondary ms-2">
+                    Volver
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

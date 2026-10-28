@@ -9,6 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 // CONFIGURACIÓN DE SERVICIOS
 builder.Services.AddControllersWithViews();
 
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 // Base de datos de BibliotecaMVC
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -29,7 +34,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<BibliotecaMVC.Data.IdentityDbContext>()
 .AddDefaultTokenProviders();
 
-// Configuración de inicio de sesión
+// Configuración de inicio de sesión y acceso denegado
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Cuenta/Login";
@@ -42,10 +47,11 @@ builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 var app = builder.Build();
 
-// CONFIGURACIÓN DE LA APLICACIÓN
+// MANEJO GLOBAL DE ERRORES
+app.UseExceptionHandler("/Home/Error");
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -71,7 +77,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider
         .GetRequiredService<UserManager<IdentityUser>>();
 
-    // Roles requeridos y roles antiguos
+    // Roles existentes del proyecto
     string[] roles =
     {
         "Admin",
@@ -97,8 +103,7 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Migrar los usuarios de los roles anteriores
-    // sin eliminar las asignaciones antiguas.
+    // Migrar roles antiguos sin eliminar las asignaciones anteriores
     foreach (var usuario in userManager.Users.ToList())
     {
         var rolesActuales =
@@ -130,7 +135,7 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // CREAR O CONFIGURAR ADMIN
+    // CREAR O CONFIGURAR ADMINISTRADOR
     var adminEmail =
         builder.Configuration["BootstrapAdmin:Email"];
 
@@ -174,7 +179,6 @@ using (var scope = app.Services.CreateScope())
             }
         }
     }
-  
 }
 
 app.Run();
